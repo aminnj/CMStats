@@ -19,4 +19,8 @@ every now and then to save them forever.
 
 * Make plots/fits with `python plot.py -i log.txt` (`-i` is optional and defaults to `log.txt`). Output goes into `plots/`.
 
+#### Example plots
+
+![example][example.png]
+
 
