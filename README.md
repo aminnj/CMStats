@@ -21,6 +21,6 @@ every now and then to save them forever.
 
 #### Example plots
 
-![example][example.png]
+![example](example.png)
 
 
