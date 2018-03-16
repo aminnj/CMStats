@@ -14,7 +14,7 @@ import matplotlib.dates as mdates
 
 def plot_speed_vs_date(points, fname):
     fig, ax = plt.subplots(nrows=1, ncols=1)
-    ax.plot(points[:,0], points[:,1], "ro",label="times")
+    ax.plot(points[:,0], points[:,1], "o",label="times")
     ax.legend(loc="upper left",numpoints=1)
     ax.grid(True)
     ax.set_title("speed vs date")
@@ -41,7 +41,7 @@ def plot_speed_vs_solvenum(points, fname):
 
     ax.plot(xs, rmean, 'k', color='#1B2ACC')
     ax.fill_between(xs, rmean-1.*rstd, rmean+1.*rstd,
-            alpha=0.4, edgecolor='#1B2ACC', facecolor='#089FFF',
+            alpha=0.4, edgecolor='C0', facecolor='C0',
             linewidth=1, linestyle='-', antialiased=True, label="SMA(50) $\\pm 1\\sigma$")
 
     ax.legend(loc="upper left",numpoints=1)
@@ -59,6 +59,7 @@ def group_by_day(points):
     for cat,group in groups:
         vals = np.array(list(group))[:,1]
         median, std = np.median(vals), vals.std()
+        if std < 0.01: continue
         new_points.append([cat, median, std])
     return np.array(new_points)
 
@@ -70,18 +71,16 @@ def plot_speed_vs_day(points, fname):
     stds = np.array(points[:,2],dtype=float)
 
     fig, ax = plt.subplots(nrows=1, ncols=1)
-    xs = np.arange(len(points[:,1]))
 
     # Linear fit
     offsets = np.array([1.0*(d-days[0]).days for d in days])
     coef, cov = np.polyfit(offsets, means, 1, w=1./stds, cov=True)
-    errs = np.diag(cov)**2
-    fit_label = "linear fit: [${:.1f}\\pm{:.1f} + ({:.1f}\\pm{:.1f})$*days] sec".format(coef[1], errs[1], coef[0], errs[0])
+    errs = np.abs(np.diag(cov))
+    fit_label = "linear fit: [${:.2f}\\pm{:.2f} + ({:.2f}\\pm{:.2f})$*days] sec".format(coef[1], errs[1], coef[0], errs[0])
     fit_y = coef[0]*offsets + coef[1]
-    ax.plot(days, fit_y, 'k', color='r', linewidth=2., label=fit_label)
+    ax.plot(days, fit_y, color='C3', linewidth=2., label=fit_label,zorder=100,alpha=0.7)
 
-    ax.plot(days, means, 'k', color='#1B2ACC')
-    ax.errorbar(days, means, yerr=stds, fmt='ko', color='#1B2ACC', label="daily $\\mu \\pm 1\\sigma$")
+    ax.errorbar(days, means, yerr=stds, fmt='o', color='C0', label="daily $\\mu \\pm 1\\sigma$")
 
     ax.legend(loc="upper left",numpoints=1)
     ax.grid(True)
